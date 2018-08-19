@@ -1,27 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9c3b9c99-8a86-4a4a-9ca8-1691dee9327d" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/A_SRP.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/.idea/zhihuuser-master.iml" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/scrapy.cfg" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/__init__.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/commands/__init__.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/commands/crawlall.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/ip_proxy/__init__.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/ip_proxy/get_ip.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/ip_proxy/proxies.txt" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/items.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/middlewares.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/pipelines.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/settings.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/spiders/__init__.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/spiders/zhihu.py" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/zhihuuser/test.py" />
-    </list>
+    <list default="true" id="9c3b9c99-8a86-4a4a-9ca8-1691dee9327d" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -76,7 +56,7 @@
         <entry file="file://$PROJECT_DIR$/zhihuuser/items.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1225">
-              <caret line="49" column="23" lean-forward="true" selection-start-line="49" selection-start-column="23" selection-end-line="49" selection-end-column="23" />
+              <caret line="49" column="23" lean-forward="false" selection-start-line="49" selection-start-column="23" selection-end-line="49" selection-end-column="23" />
               <folding />
             </state>
           </provider>
@@ -130,7 +110,7 @@
         <entry file="file://$PROJECT_DIR$/zhihuuser/settings.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="353">
-              <caret line="121" column="44" lean-forward="true" selection-start-line="121" selection-start-column="44" selection-end-line="121" selection-end-column="44" />
+              <caret line="121" column="44" lean-forward="false" selection-start-line="121" selection-start-column="44" selection-end-line="121" selection-end-column="44" />
               <folding>
                 <element signature="e#24#37#0" expanded="true" />
                 <element signature="e#1457#5835#0" expanded="false" />
@@ -827,7 +807,7 @@
     <entry file="file://$PROJECT_DIR$/zhihuuser/items.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1225">
-          <caret line="49" column="23" lean-forward="true" selection-start-line="49" selection-start-column="23" selection-end-line="49" selection-end-column="23" />
+          <caret line="49" column="23" lean-forward="false" selection-start-line="49" selection-start-column="23" selection-end-line="49" selection-end-column="23" />
           <folding />
         </state>
       </provider>
@@ -835,7 +815,7 @@
     <entry file="file://$PROJECT_DIR$/zhihuuser/settings.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="353">
-          <caret line="121" column="44" lean-forward="true" selection-start-line="121" selection-start-column="44" selection-end-line="121" selection-end-column="44" />
+          <caret line="121" column="44" lean-forward="false" selection-start-line="121" selection-start-column="44" selection-end-line="121" selection-end-column="44" />
           <folding>
             <element signature="e#24#37#0" expanded="true" />
             <element signature="e#1457#5835#0" expanded="false" />
