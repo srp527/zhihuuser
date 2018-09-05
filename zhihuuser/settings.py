@@ -29,6 +29,7 @@ ROBOTSTXT_OBEY = False
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
 DOWNLOAD_DELAY = 1
+
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -105,10 +106,29 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
+
+# Retry many times since proxies often fail
+RETRY_TIMES = 3
+# Retry on most error codes since proxies fail for different reasons
+RETRY_HTTP_CODES = [500, 503, 504, 400, 403, 404, 408]
+
 DOWNLOADER_MIDDLEWARES = {
-   'zhihuuser.middlewares.ProxyMiddleWare':120
+   # 'scrapy.downloadermiddlewares.retry.RetryMiddleware': 90,
+   # 'zhihuuser.middlewares.ProxyMiddleWare':120,
+   'zhihuuser.middlewares.RandomProxy':100,
+   # 'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': 110,
    # 'zhihuuser.middlewares.MyCustomDownloaderMiddleware': 543,
 }
+PROXY_LIST = './zhihuuser/ip_proxy/proxies.txt'
+
+# Proxy mode
+# 0 = Every requests have different proxy
+# 1 = Take only one proxy from the list and assign it to every requests
+# 2 = Put a custom proxy to use in the settings
+PROXY_MODE = 0
+# If proxy mode is 2 uncomment this sentence :
+#CUSTOM_PROXY = "http://host1:port"
+
 
 # Enable or disable extensions
 # See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
@@ -121,6 +141,7 @@ DOWNLOADER_MIDDLEWARES = {
 ITEM_PIPELINES = {
    'zhihuuser.pipelines.MongoPipeline': 300,
    'scrapy_redis.pipelines.RedisPipeline': 301,
+
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -145,15 +166,15 @@ ITEM_PIPELINES = {
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 MONGO_URI = '192.168.30.11'
-MONGO_DATABASE = 'zhihu'
+MONGO_DATABASE = 'zhihu1'
 
 #分布式 调度器
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 #去重
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 
-# REDIS_URL = 'redis://root:1234@120.27.34.24:6379'
-REDIS_URL = 'redis://192.168.30.11:6379/1'
 
+REDIS_URL = 'redis://root:1234@192.168.30.11:6379/1'
+# REDIS_URL = 'redis://192.168.30.11:6379/1'
 
 COMMANDS_MODULE= "zhihuuser.commands"

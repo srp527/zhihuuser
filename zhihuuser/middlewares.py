@@ -10,7 +10,8 @@ import random
 
 # from scrapy import signals
 
-from zhihuuser.settings import BASE_DIR
+from zhihuuser.settings import BASE_DIR,RETRY_HTTP_CODES
+
 
 class ZhihuuserSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,
@@ -60,42 +61,145 @@ class ZhihuuserSpiderMiddleware(object):
         spider.logger.info('Spider opened: %s' % spider.name)
 
 
-class ProxyMiddleWare(object):
+import re
+import random
+import base64
+import logging
 
-    def process_request(self,request,spider):
-        '''对request对象加上proxy'''
-        proxy = self.get_random_proxy()
-        print("this is request ip:" + proxy)
-        request.meta['proxy'] = proxy
+log = logging.getLogger('scrapy.proxies')
 
-    def process_response(self, request, response, spider):
-        '''对返回的response处理'''
-        # 如果返回的response状态不是200，重新生成当前request对象
-        if response.status != 200:
-            proxy = self.get_random_proxy()
-            print("this is response ip:" + proxy)
-            # 对当前reque加上代理
-            request.meta['proxy'] = proxy
-            return request
-        return response
 
-    def get_random_proxy(self):
-        '''随机从文件中读取proxy'''
-        file_dir = os.path.join(BASE_DIR,'ip_proxy','proxies.txt')
-        while 1:
-            with open(file_dir, 'r') as f:
-                proxies = f.readlines()
-            if proxies:
-                break
+class Mode:
+    RANDOMIZE_PROXY_EVERY_REQUESTS, RANDOMIZE_PROXY_ONCE, SET_CUSTOM_PROXY = range(3)
+
+
+class RandomProxy(object):
+
+    def __init__(self, settings):
+        self.mode = settings.get('PROXY_MODE')
+        self.proxy_list = settings.get('PROXY_LIST')
+        self.chosen_proxy = ''
+
+        if self.mode == Mode.RANDOMIZE_PROXY_EVERY_REQUESTS or self.mode == Mode.RANDOMIZE_PROXY_ONCE:
+            if self.proxy_list is None:
+                raise KeyError('PROXY_LIST setting is missing')
+            self.proxies = {}
+            fin = open(self.proxy_list)
+            try:
+                for line in fin.readlines():
+                    parts = re.match('(\w+://)([^:]+?:[^@]+?@)?(.+)', line.strip())
+                    if not parts:
+                        continue
+
+                    # Cut trailing @
+                    if parts.group(2):
+                        user_pass = parts.group(2)[:-1]
+                    else:
+                        user_pass = ''
+
+                    self.proxies[parts.group(1) + parts.group(3)] = user_pass
+            finally:
+                fin.close()
+            if self.mode == Mode.RANDOMIZE_PROXY_ONCE:
+                self.chosen_proxy = random.choice(list(self.proxies.keys()))
+        elif self.mode == Mode.SET_CUSTOM_PROXY:
+            custom_proxy = settings.get('CUSTOM_PROXY')
+            self.proxies = {}
+            parts = re.match('(\w+://)([^:]+?:[^@]+?@)?(.+)', custom_proxy.strip())
+            if not parts:
+                raise ValueError('CUSTOM_PROXY is not well formatted')
+
+            if parts.group(2):
+                user_pass = parts.group(2)[:-1]
             else:
-                time.sleep(1)
-        proxy = random.choice(proxies).strip()
-        print('------>proxy',proxy)
-        return proxy
+                user_pass = ''
 
-    def process_exception(self,request,exception,spider):
+            self.proxies[parts.group(1) + parts.group(3)] = user_pass
+            self.chosen_proxy = parts.group(1) + parts.group(3)
 
-        return None
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings)
 
-if __name__ == '__main__':
-    print(BASE_DIR)
+    def process_request(self, request, spider):
+        # Don't overwrite with a random one (server-side state for IP)
+        if 'proxy' in request.meta:
+            if request.meta["exception"] is False:
+                return
+        request.meta["exception"] = False
+        if len(self.proxies) == 0:
+            raise ValueError('All proxies are unusable, cannot proceed')
+
+        if self.mode == Mode.RANDOMIZE_PROXY_EVERY_REQUESTS:
+            proxy_address = random.choice(list(self.proxies.keys()))
+        else:
+            proxy_address = self.chosen_proxy
+
+        proxy_user_pass = self.proxies[proxy_address]
+
+
+        if proxy_user_pass:
+            request.meta['proxy'] = proxy_address
+            basic_auth = 'Basic ' + base64.b64encode(proxy_user_pass.encode()).decode()
+            request.headers['Proxy-Authorization'] = basic_auth
+        else:
+            log.debug('Proxy user pass not found')
+        log.debug('Using proxy <%s>, %d proxies left' % (proxy_address, len(self.proxies)))
+
+
+    def process_exception(self, request, exception, spider):
+        if 'proxy' not in request.meta:
+            return
+        if self.mode == Mode.RANDOMIZE_PROXY_EVERY_REQUESTS or self.mode == Mode.RANDOMIZE_PROXY_ONCE:
+            proxy = request.meta['proxy']
+            print('proxy-->',proxy)
+            try:
+                del self.proxies[proxy]
+            except KeyError:
+                print('del failed!')
+            request.meta["exception"] = True
+            if self.mode == Mode.RANDOMIZE_PROXY_ONCE:
+                self.chosen_proxy = random.choice(list(self.proxies.keys()))
+            log.info('Removing failed proxy <%s>, %d proxies left' % (proxy, len(self.proxies)))
+
+
+
+
+# class ProxyMiddleWare(object):
+#
+#     def process_request(self,request,spider):
+#         '''request对象加上proxy'''
+#         proxy = self.get_random_proxy()
+#         print("this is request ip:" + proxy)
+#         request.meta['proxy'] = proxy
+#
+#     def process_response(self, request, response, spider):
+#         '''对返回的response处理'''
+#         # 如果返回的response状态不是200，重新生成当前request对象
+#         if response.status != 200:
+#             proxy = self.get_random_proxy()
+#             print("this is response ip:" + proxy)
+#             # 对当前reque加上代理
+#             request.meta['proxy'] = proxy
+#             return request
+#         return response
+#
+#     def get_random_proxy(self):
+#         '''随机从文件中读取proxy'''
+#         file_dir = os.path.join(BASE_DIR,'ip_proxy','proxies.txt')
+#         while 1:
+#             with open(file_dir, 'r') as f:
+#                 proxies = f.readlines()
+#             if proxies:
+#                 break
+#             else:
+#                 time.sleep(1)
+#         proxy = random.choice(proxies).strip()
+#         print('------>proxy',proxy)
+#         return proxy
+#
+#     # def process_exception(self,request,exception,spider):
+#     #
+#     #     return None
+
+

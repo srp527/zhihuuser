@@ -104,4 +104,7 @@ if __name__ == '__main__':
        for proxy in proxie:
              f.write(proxy+'\n')
 
+    # https: // 49.85.4.204: 27198
+
+
 
