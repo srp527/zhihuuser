@@ -13,15 +13,15 @@
            'authorization':'oauth c3cef7c66a1843f8b3a9e6a1e3160e20'
         }
 
-        
+
 2.代理IP:
 #### ip_proxy: 获取代理ip (http://www.xicidaili.com/)
- 现在只是爬取一个网站,后期将该成多个网站
+    现在只是爬取一个网站,后期将该成多个网站
 
 
-#### Random proxy middleware for Scrapy 实现代理爬取
-这里自己修改了一下 将RandomProxy直接放到了middlewares.py中,
-原安装方法(https://github.com/aivarsk/scrapy-proxies)
+#### Random proxy middleware for Scrapy  使用代理爬取
+    这里自己修改了一下 将RandomProxy直接放到了middlewares.py中,
+    源码安装方法(https://github.com/aivarsk/scrapy-proxies)
 
     settings.py
     -----------
@@ -45,9 +45,9 @@
         PROXY_LIST = './zhihuuser/ip_proxy/proxies.txt' #文件路径
 
         # Proxy mode
-        # 0 = Every requests have different proxy
-        # 1 = Take only one proxy from the list and assign it to every requests
-        # 2 = Put a custom proxy to use in the settings
+        # 0 = Every requests have different proxy  每个请求都使用不同代理
+        # 1 = Take only one proxy from the list and assign it to every requests 使用一个代理访问所有请求
+        # 2 = Put a custom proxy to use in the settings  自定义指定一个代理
         PROXY_MODE = 0
 
         # If proxy mode is 2 uncomment this sentence :
@@ -74,21 +74,21 @@
 
 #### scrapy-redis 实现分布式
 
-settings.py
------------
+    settings.py
+    -----------
 
-    ITEM_PIPELINES = {
-       'zhihuuser.pipelines.MongoPipeline': 300,     #数据持久化(入库)
-       'scrapy_redis.pipelines.RedisPipeline': 301,
-    }
-
-    #分布式 调度器
-    SCHEDULER = "scrapy_redis.scheduler.Scheduler"
-    #去重
-    DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
-
-    REDIS_URL = 'redis://root:1234@192.168.30.11:6379/1' #有密码
-    # REDIS_URL = 'redis://192.168.30.11:6379/1'  #无密码
+        ITEM_PIPELINES = {
+           'zhihuuser.pipelines.MongoPipeline': 300,     #数据持久化(入库)
+           'scrapy_redis.pipelines.RedisPipeline': 301,
+        }
+    
+        #分布式 调度器
+        SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+        #去重
+        DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+    
+        REDIS_URL = 'redis://root:1234@192.168.30.11:6379/1' #有密码
+        # REDIS_URL = 'redis://192.168.30.11:6379/1'  #无密码
 
 
 
